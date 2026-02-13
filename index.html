@@ -183,7 +183,7 @@
     <img src="https://i.ibb.co/fzT6SMY2/2f.jpg" alt="Два года за одной партой">
     <div class="caption">
         <h2>Два года «мучений» за одной партой</h2>
-        <p>Кто бы мог подумать, что из бесконечных лекций, скучных пар и общих тетрадей вырастет что-то настолько настоящее. Столько времени бок о бок — и это было только начало.</p>
+        <p>Кто бы мог подумать, что из бесконечных уроков и общих тетрадей вырастет что-то настолько настоящее. Столько времени бок о бок — и это было только начало.</p>
     </div>
 </div>
 <div class="moment">
@@ -318,7 +318,7 @@ function sendLove() {
         </footer>
     </div>
 
-    <audio id="bg-music" loop>
+    <audio id="bg-music" loop playsinline preload="auto">
         <source src="https://files.catbox.moe/ywzc4w.mp3" type="audio/mpeg">
     </audio>
 
@@ -342,14 +342,19 @@ function updateTimer() {
 
 function checkLogin() {
     const name = document.getElementById('username').value.trim().toLowerCase();
-    const pass = document.getElementById('password').value.trim().toLowerCase(); // добавил toLowerCase для удобства
+    const pass = document.getElementById('password').value.trim().toLowerCase();
     const music = document.getElementById('bg-music');
     
-    // Проверка логина
     if (name === "елена" && pass === "масик") { 
-        // 1. Пытаемся запустить музыку сразу по клику
+        // ВАЖНО: Запускаем музыку ПЕРВЫМ делом, сразу по клику
         if (music) {
-            music.play().catch(e => console.log("Браузер ждет..."));
+            music.play().then(() => {
+                console.log("Воспроизведение началось");
+            }).catch(e => {
+                console.log("Ошибка: ", e);
+                // Если совсем всё плохо, пробуем запустить еще раз через документ
+                document.addEventListener('click', () => { music.play(); }, {once: true});
+            });
         }
 
         document.getElementById('login-screen').style.opacity = '0';
@@ -357,8 +362,6 @@ function checkLogin() {
         setTimeout(() => {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
-            
-            // 2. Скроллим ВВЕРХ после того как контент отобразился
             window.scrollTo(0, 0); 
             
             setTimeout(() => { 
@@ -387,3 +390,4 @@ document.querySelectorAll('.moment').forEach(m => observer.observe(m));
 </body>
 
 </html>
+
