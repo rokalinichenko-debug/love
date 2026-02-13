@@ -156,9 +156,6 @@
     </style>
 </head>
 <body>
-	<div id="music-control" onclick="toggleMusic()" style="position: fixed; top: 20px; right: 20px; z-index: 10001; background: rgba(0,0,0,0.5); width: 45px; height: 45px; border-radius: 50%; display: none; align-items: center; justify-content: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.3); color: white; font-size: 1.2rem;">
-    <span id="music-icon">🔊</span>
-</div>
 
     <div id="login-screen">
         <div class="login-box">
@@ -347,15 +344,17 @@ function checkLogin() {
     const name = document.getElementById('username').value.trim().toLowerCase();
     const pass = document.getElementById('password').value.trim().toLowerCase();
     const music = document.getElementById('bg-music');
-    const musicBtn = document.getElementById('music-control');
     
     if (name === "елена" && pass === "масик") { 
-        // Показываем кнопку управления звуком
-        musicBtn.style.display = 'flex';
-
-        // Запускаем музыку
+        // ВАЖНО: Запускаем музыку ПЕРВЫМ делом, сразу по клику
         if (music) {
-            music.play().catch(e => console.log("Ждем клика для звука"));
+            music.play().then(() => {
+                console.log("Воспроизведение началось");
+            }).catch(e => {
+                console.log("Ошибка: ", e);
+                // Если совсем всё плохо, пробуем запустить еще раз через документ
+                document.addEventListener('click', () => { music.play(); }, {once: true});
+            });
         }
 
         document.getElementById('login-screen').style.opacity = '0';
@@ -377,19 +376,6 @@ function checkLogin() {
     }
 }
 
-// Функция для вкл/выкл звука вручную
-function toggleMusic() {
-    const music = document.getElementById('bg-music');
-    const icon = document.getElementById('music-icon');
-    
-    if (music.paused) {
-        music.play();
-        icon.innerText = '🔊';
-    } else {
-        music.pause();
-        icon.innerText = '🔈';
-    }
-}
 // Анимация появления блоков
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
