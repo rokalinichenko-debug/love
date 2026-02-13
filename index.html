@@ -323,50 +323,58 @@ function sendLove() {
     </audio>
 
     <script>
-        // НАСТРОЙКА ДАТЫ (Год, Месяц(0-11), День, Час, Минута)
-        const startDate = new Date(2023, 8, 18, 0, 0); 
+// НАСТРОЙКА ДАТЫ
+const startDate = new Date(2023, 8, 18, 0, 0); 
 
-        function updateTimer() {
-            const now = new Date();
-            const diff = now - startDate;
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-            const minutes = Math.floor((diff / 1000 / 60) % 60);
-            const seconds = Math.floor((diff / 1000) % 60);
+function updateTimer() {
+    const now = new Date();
+    const diff = now - startDate;
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / 1000 / 60) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
 
-            document.getElementById('days').innerText = days;
-            document.getElementById('hours').innerText = hours.toString().padStart(2, '0');
-            document.getElementById('minutes').innerText = minutes.toString().padStart(2, '0');
-            document.getElementById('seconds').innerText = seconds.toString().padStart(2, '0');
+    document.getElementById('days').innerText = days;
+    document.getElementById('hours').innerText = hours.toString().padStart(2, '0');
+    document.getElementById('minutes').innerText = minutes.toString().padStart(2, '0');
+    document.getElementById('seconds').innerText = seconds.toString().padStart(2, '0');
+}
+
+function checkLogin() {
+    const name = document.getElementById('username').value.trim().toLowerCase();
+    const pass = document.getElementById('password').value.trim().toLowerCase(); // добавил toLowerCase для удобства
+    const music = document.getElementById('bg-music');
+    
+    // Проверка логина
+    if (name === "елена" && pass === "масик") { 
+        // 1. Пытаемся запустить музыку сразу по клику
+        if (music) {
+            music.play().catch(e => console.log("Браузер ждет..."));
         }
 
-        function checkLogin() {
-            const name = document.getElementById('username').value.trim().toLowerCase();
-            const pass = document.getElementById('password').value.trim();
+        document.getElementById('login-screen').style.opacity = '0';
+        
+        setTimeout(() => {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
             
-            if (name === "елена" && pass === "масик") { 
-                document.getElementById('login-screen').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('login-screen').style.display = 'none';
-                    document.getElementById('main-content').style.display = 'block';
-                    setTimeout(() => { document.getElementById('main-content').style.opacity = '1'; }, 100);
-                    
-                    const music = document.getElementById('bg-music');
-                    music.play().catch(e => console.log("Музыка ждет взаимодействия"));
-                    
-                    setInterval(updateTimer, 1000);
-                    updateTimer();
-                }, 1000);
-			window.scrollTo({
-  top: 0,
-  behavior: 'smooth'
-});
-            } else {
-                document.getElementById('error').style.display = 'block';
-            }
-        }
+            // 2. Скроллим ВВЕРХ после того как контент отобразился
+            window.scrollTo(0, 0); 
+            
+            setTimeout(() => { 
+                document.getElementById('main-content').style.opacity = '1'; 
+            }, 100);
+            
+            setInterval(updateTimer, 1000);
+            updateTimer();
+        }, 1000);
+    } else {
+        document.getElementById('error').style.display = 'block';
+    }
+}
 
-        const observer = new IntersectionObserver((entries) => {
+// Анимация появления блоков
+const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             entry.target.classList.add('visible');
@@ -375,6 +383,7 @@ function sendLove() {
 }, { threshold: 0.1 });
 
 document.querySelectorAll('.moment').forEach(m => observer.observe(m));
-    </script>
+</script>
 </body>
+
 </html>
